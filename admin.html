@@ -267,10 +267,10 @@
             return data.secure_url;
         }
 
-        const comicsCol = collection(db, 'chapters');
+        const chaptersCol = collection(db, 'chapters');
 
         function loadComics() {
-            const q = query(comicsCol, orderBy('createdAt', 'desc'));
+            const q = query(chaptersCol, orderBy('createdAt', 'desc'));
             onSnapshot(q, snapshot => {
                 comicListDiv.innerHTML = '';
                 if (snapshot.empty) {
@@ -366,7 +366,7 @@
                     const docRef = doc(db, 'chapters', comicIdInput.value);
                     await updateDoc(docRef, comicData);
                 } else {
-                    await addDoc(comicsCol, { ...comicData, createdAt: serverTimestamp() });
+                    await addDoc(chaptersCol, { ...comicData, createdAt: serverTimestamp() });
                 }
 
                 resetForm();
