@@ -17,7 +17,9 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         #comic-reader-view .comic-panel {
-            max-width: 800px;
+            width: 100%; /* Ensures image is responsive */
+            height: auto; /* Maintain aspect ratio */
+            max-width: 800px; /* Max width for larger screens */
             margin: 0 auto;
             display: block;
         }
@@ -27,17 +29,17 @@
 
     <!-- Header -->
     <header class="glass-header sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-2xl font-bold text-sky-400 tracking-wider"><i class="fas fa-book-open-reader mr-2"></i>KomikKu</a>
             <div><a href="admin.html" class="text-gray-300 hover:text-sky-400 transition duration-300"><i class="fas fa-user-shield mr-1"></i> Panel Admin</a></div>
         </nav>
     </header>
 
     <!-- Main Content: Comic Gallery -->
-    <main id="gallery-view" class="container mx-auto px-6 py-12">
-        <h1 class="text-4xl font-extrabold text-center mb-4">Koleksi Komik Terbaru</h1>
+    <main id="gallery-view" class="container mx-auto px-4 sm:px-6 py-12">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-4">Koleksi Komik Terbaru</h1>
         <p class="text-center text-slate-400 mb-12 max-w-2xl mx-auto">Selamat datang di koleksi komik pribadi. Pilih komik yang ingin kamu baca di bawah ini.</p>
-        <div id="comic-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+        <div id="comic-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
             <!-- Loading Skeleton -->
             <div class="animate-pulse col-span-full text-center text-slate-400">Memuat koleksi komik...</div>
         </div>
@@ -45,21 +47,24 @@
 
     <!-- Comic Reader View (Initially Hidden) -->
     <div id="comic-reader-view" class="hidden">
-        <!-- Reader Header (Sticky) -->
-        <div class="glass-header sticky top-0 z-40 py-3 px-6">
-            <div class="container mx-auto flex justify-between items-center gap-4">
-                <button id="back-to-gallery" class="bg-sky-500/80 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 whitespace-nowrap"><i class="fas fa-arrow-left mr-2"></i> Kembali</button>
-                <h2 id="comic-reader-title" class="text-xl font-bold text-center truncate">Membaca...</h2>
-                <div class="flex items-center gap-3 bg-slate-700/80 p-2 rounded-lg">
-                    <button id="play-scroll" class="w-10 h-10 flex items-center justify-center bg-green-500 hover:bg-green-600 rounded-full transition"><i class="fas fa-play"></i></button>
-                    <button id="pause-scroll" class="w-10 h-10 flex items-center justify-center bg-red-500 hover:bg-red-600 rounded-full transition"><i class="fas fa-pause"></i></button>
-                    <div class="flex items-center gap-2 text-sm cursor-pointer" id="speed-control">
+        <!-- Reader Header (Sticky and Responsive) -->
+        <div class="glass-header sticky top-0 z-40 py-3 px-4">
+            <div class="container mx-auto flex justify-between items-center gap-2">
+                <button id="back-to-gallery" class="bg-sky-500/80 hover:bg-sky-600 text-white font-bold py-2 px-3 rounded-lg transition duration-300 whitespace-nowrap">
+                    <i class="fas fa-arrow-left sm:mr-2"></i>
+                    <span class="hidden sm:inline">Kembali</span>
+                </button>
+                <h2 id="comic-reader-title" class="text-base sm:text-xl font-bold text-center truncate w-full px-2">Membaca...</h2>
+                <div class="flex items-center gap-2 bg-slate-700/80 p-2 rounded-lg">
+                    <button id="play-scroll" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-green-500 hover:bg-green-600 rounded-full transition"><i class="fas fa-play"></i></button>
+                    <button id="pause-scroll" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-red-500 hover:bg-red-600 rounded-full transition"><i class="fas fa-pause"></i></button>
+                    <div class="flex items-center gap-1 sm:gap-2 text-sm cursor-pointer" id="speed-control">
                         <i class="fas fa-gauge-high"></i><span id="scroll-speed-display">1</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="comic-panels-container" class="py-8"></div>
+        <div id="comic-panels-container" class="py-4"></div>
     </div>
     
     <footer class="bg-transparent mt-16 py-6 text-center text-slate-400"><p>&copy; 2024 KomikKu. Dibuat untuk koleksi pribadi.</p></footer>
@@ -191,4 +196,3 @@
     </script>
 </body>
 </html>
-
