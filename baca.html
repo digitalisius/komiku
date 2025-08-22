@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baca Komik - KomikKu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .comic-panel {
+            width: 100%;
+            height: auto;
+            max-width: 800px;
+            margin: 0 auto;
+            display: block;
+        }
+        .scroll-controls {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white">
+
+    <main id="reader-container" class="pb-24">
+        <h1 id="chapter-title" class="text-center text-2xl font-bold py-8">Memuat Chapter...</h1>
+        <div id="comic-panels-container">
+            <!-- Comic panels will be loaded here -->
+        </div>
+    </main>
+
+    <!-- Floating Scroll Controls -->
+    <div class="scroll-controls fixed bottom-0 left-0 right-0 z-50">
+        <div class="container mx-auto flex justify-between items-center p-3">
+            <a id="back-to-detail" href="#" class="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                <i class="fas fa-arrow-left mr-2"></i> Kembali
+            </a>
+            <div class="flex items-center gap-3 bg-slate-800/80 p-2 rounded-lg">
+                <button id="play-scroll" class="w-10 h-10 flex items-center justify-center bg-green-500 hover:bg-green-600 rounded-full transition"><i class="fas fa-play"></i></button>
+                <button id="pause-scroll" class="w-10 h-10 flex items-center justify-center bg-red-500 hover:bg-red-600 rounded-full transition"><i class="fas fa-pause"></i></button>
+                <div class="flex items-center gap-2 text-sm cursor-pointer" id="speed-control">
+                    <i class="fas fa-gauge-high"></i><span id="scroll-speed-display">1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBk4PMplZ3zoY-rZqGeWO-UM4rriZVRegQ",
+            authDomain: "komik-pribadi.firebaseapp.com",
+            projectId: "komik-pribadi",
+            storageBucket: "komik-pribadi.appspot.com",
+            messagingSenderId: "661200517127",
+            appId: "1:661200517127:web:fc2acb1f5522f0fbfed2a2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let scrollInterval = null;
+        let scrollSpeed = 1;
+
+        const chapterTitleEl = document.getElementById('chapter-title');
+        const panelsContainer = document.getElementById('comic-panels-container');
+        const backToDetailBtn = document.getElementById('back-to-detail');
+        const playBtn = document.getElementById('play-scroll');
+        const pauseBtn = document.getElementById('pause-scroll');
+        const speedDisplay = document.getElementById('scroll-speed-display');
+        const speedControl = document.getElementById('speed-control');
+
+        async function loadChapter() {
+            const params = new URLSearchParams(window.location.search);
+            const chapterId = params.get('id');
+
+            if (!chapterId) {
+                chapterTitleEl.textContent = "ID Chapter tidak ditemukan.";
+                return;
+            }
+
+            const docRef = doc(db, 'chapters', chapterId);
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const chapter = docSnap.data();
+                    chapterTitleEl.textContent = `${chapter.title} - ${chapter.chapter}`;
+                    backToDetailBtn.href = `detail.html?title=${encodeURIComponent(chapter.title)}`;
+
+                    panelsContainer.innerHTML = '';
+                    chapter.panels.forEach(panelUrl => {
+                        const img = document.createElement('img');
+                        img.src = panelUrl;
+                        img.alt = "Comic Panel";
+                        img.className = "comic-panel";
+                        img.loading = "lazy";
+                        img.onerror = () => { img.src = 'https://placehold.co/800x1200/334155/ffffff?text=Gagal+memuat+panel'; };
+                        panelsContainer.appendChild(img);
+                    });
+                } else {
+                    chapterTitleEl.textContent = "Chapter tidak ditemukan.";
+                }
+            } catch (error) {
+                console.error("Error getting chapter: ", error);
+                chapterTitleEl.textContent = "Gagal memuat chapter.";
+            }
+        }
+
+        function startAutoScroll() {
+            if (scrollInterval) return;
+            scrollInterval = setInterval(() => window.scrollBy(0, scrollSpeed), 20);
+        }
+
+        function stopAutoScroll() {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
+        }
+
+        function changeScrollSpeed() {
+            scrollSpeed = (scrollSpeed % 5) + 1;
+            speedDisplay.textContent = scrollSpeed;
+        }
+
+        playBtn.addEventListener('click', startAutoScroll);
+        pauseBtn.addEventListener('click', stopAutoScroll);
+        speedControl.addEventListener('click', changeScrollSpeed);
+
+        loadChapter();
+    </script>
+</body>
+</html>

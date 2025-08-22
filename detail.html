@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Komik - KomikKu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-header { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="bg-slate-900 text-white bg-gradient-to-br from-slate-900 to-blue-900 min-h-screen">
+
+    <header class="glass-header sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-sky-400 tracking-wider"><i class="fas fa-book-open-reader mr-2"></i>KomikKu</a>
+            <div><a href="admin.html" class="text-gray-300 hover:text-sky-400 transition duration-300"><i class="fas fa-user-shield mr-1"></i> Panel Admin</a></div>
+        </nav>
+    </header>
+
+    <main id="detail-container" class="container mx-auto px-4 sm:px-6 py-12">
+        <!-- Content will be loaded here by JavaScript -->
+        <div id="loading-indicator" class="text-center text-slate-400">Memuat detail komik...</div>
+    </main>
+
+    <footer class="bg-transparent mt-16 py-6 text-center text-slate-400"><p>&copy; 2024 KomikKu. Dibuat untuk koleksi pribadi.</p></footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBk4PMplZ3zoY-rZqGeWO-UM4rriZVRegQ",
+            authDomain: "komik-pribadi.firebaseapp.com",
+            projectId: "komik-pribadi",
+            storageBucket: "komik-pribadi.appspot.com",
+            messagingSenderId: "661200517127",
+            appId: "1:661200517127:web:fc2acb1f5522f0fbfed2a2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const detailContainer = document.getElementById('detail-container');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        async function loadComicDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const comicTitle = params.get('title');
+
+            if (!comicTitle) {
+                detailContainer.innerHTML = `<p class="text-center text-red-400">Judul komik tidak ditemukan.</p>`;
+                return;
+            }
+
+            const chaptersCol = collection(db, 'chapters');
+            const q = query(chaptersCol, where("title", "==", comicTitle), orderBy("createdAt", "desc"));
+            
+            try {
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    detailContainer.innerHTML = `<p class="text-center text-red-400">Komik dengan judul '${comicTitle}' tidak ditemukan.</p>`;
+                    return;
+                }
+
+                const chapters = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const comicInfo = chapters[0]; // All chapters share the same metadata
+
+                let detailHTML = `
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
+                            <img src="${comicInfo.thumbnail}" alt="${comicInfo.title}" class="w-full rounded-lg shadow-lg">
+                        </div>
+                        <div class="w-full md:w-2/3 lg:w-3/4">
+                            <h1 class="text-4xl font-extrabold mb-2">${comicInfo.title}</h1>
+                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-slate-400 mb-4">
+                                <span><i class="fas fa-user-pen mr-2"></i>${comicInfo.author || 'N/A'}</span>
+                                <span><i class="fas fa-palette mr-2"></i>${comicInfo.artist || 'N/A'}</span>
+                                <span><i class="fas fa-tag mr-2"></i>${comicInfo.type || 'N/A'}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                ${(comicInfo.genre || []).map(g => `<span class="bg-sky-500/20 text-sky-300 text-xs font-semibold px-2.5 py-1 rounded-full">${g}</span>`).join('')}
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Sinopsis</h2>
+                            <p class="text-slate-300 mb-8">${comicInfo.synopsis || 'Tidak ada sinopsis.'}</p>
+                            
+                            <h2 class="text-2xl font-bold mb-4">Daftar Chapter</h2>
+                            <ul class="bg-slate-800/50 rounded-lg overflow-hidden">
+                `;
+
+                chapters.forEach(chapter => {
+                    detailHTML += `
+                        <li class="border-b border-slate-700 last:border-b-0">
+                            <a href="baca.html?id=${chapter.id}" class="flex justify-between items-center p-4 hover:bg-slate-700/50 transition duration-200">
+                                <span>${chapter.chapter}</span>
+                                <i class="fas fa-chevron-right text-slate-500"></i>
+                            </a>
+                        </li>
+                    `;
+                });
+
+                detailHTML += `</ul></div></div>`;
+                detailContainer.innerHTML = detailHTML;
+
+            } catch (error) {
+                console.error("Error getting comic details: ", error);
+                detailContainer.innerHTML = `<p class="text-center text-red-400">Gagal memuat data komik.</p>`;
+            }
+        }
+
+        loadComicDetails();
+    </script>
+</body>
+</html>
