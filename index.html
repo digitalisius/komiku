@@ -11,70 +11,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .glass-header {
-            background: rgba(15, 23, 42, 0.6); /* slate-900 with opacity */
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        #comic-reader-view .comic-panel {
-            width: 100%; /* Ensures image is responsive */
-            height: auto; /* Maintain aspect ratio */
-            max-width: 800px; /* Max width for larger screens */
-            margin: 0 auto;
-            display: block;
-        }
+        .glass-header { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body class="bg-slate-900 text-white bg-gradient-to-br from-slate-900 to-blue-900 min-h-screen">
 
-    <!-- Header -->
     <header class="glass-header sticky top-0 z-50">
         <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-sky-400 tracking-wider"><i class="fas fa-book-open-reader mr-2"></i>KomikKu</a>
+            <a href="index.html" class="text-2xl font-bold text-sky-400 tracking-wider"><i class="fas fa-book-open-reader mr-2"></i>KomikKu</a>
             <div><a href="admin.html" class="text-gray-300 hover:text-sky-400 transition duration-300"><i class="fas fa-user-shield mr-1"></i> Panel Admin</a></div>
         </nav>
     </header>
 
-    <!-- Main Content: Comic Gallery -->
-    <main id="gallery-view" class="container mx-auto px-4 sm:px-6 py-12">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-4">Koleksi Komik Terbaru</h1>
-        <p class="text-center text-slate-400 mb-12 max-w-2xl mx-auto">Selamat datang di koleksi komik pribadi. Pilih komik yang ingin kamu baca di bawah ini.</p>
-        <div id="comic-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            <!-- Loading Skeleton -->
-            <div class="animate-pulse col-span-full text-center text-slate-400">Memuat koleksi komik...</div>
-        </div>
-    </main>
+    <main class="container mx-auto px-4 sm:px-6 py-12">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-4">Koleksi Komik</h1>
+        <p class="text-center text-slate-400 mb-8 max-w-2xl mx-auto">Jelajahi semua koleksi komik pribadi Anda.</p>
 
-    <!-- Comic Reader View (Initially Hidden) -->
-    <div id="comic-reader-view" class="hidden">
-        <!-- Reader Header (Sticky and Responsive) -->
-        <div class="glass-header sticky top-0 z-40 py-3 px-4">
-            <div class="container mx-auto flex justify-between items-center gap-2">
-                <button id="back-to-gallery" class="bg-sky-500/80 hover:bg-sky-600 text-white font-bold py-2 px-3 rounded-lg transition duration-300 whitespace-nowrap">
-                    <i class="fas fa-arrow-left sm:mr-2"></i>
-                    <span class="hidden sm:inline">Kembali</span>
-                </button>
-                <h2 id="comic-reader-title" class="text-base sm:text-xl font-bold text-center truncate w-full px-2">Membaca...</h2>
-                <div class="flex items-center gap-2 bg-slate-700/80 p-2 rounded-lg">
-                    <button id="play-scroll" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-green-500 hover:bg-green-600 rounded-full transition"><i class="fas fa-play"></i></button>
-                    <button id="pause-scroll" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-red-500 hover:bg-red-600 rounded-full transition"><i class="fas fa-pause"></i></button>
-                    <div class="flex items-center gap-1 sm:gap-2 text-sm cursor-pointer" id="speed-control">
-                        <i class="fas fa-gauge-high"></i><span id="scroll-speed-display">1</span>
-                    </div>
-                </div>
+        <!-- Filter Section -->
+        <div class="mb-8 p-4 bg-slate-800/50 rounded-lg">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <input type="text" id="search-title" placeholder="Cari berdasarkan judul..." class="w-full px-4 py-2 text-white bg-slate-700/50 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <input type="text" id="search-genre" placeholder="Filter berdasarkan genre..." class="w-full px-4 py-2 text-white bg-slate-700/50 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <input type="text" id="search-author" placeholder="Filter berdasarkan author..." class="w-full px-4 py-2 text-white bg-slate-700/50 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <button id="reset-filter-btn" class="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-lg transition">Reset Filter</button>
             </div>
         </div>
-        <div id="comic-panels-container" class="py-4"></div>
-    </div>
+
+        <div id="comic-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+            <div id="loading-indicator" class="col-span-full text-center text-slate-400">Memuat koleksi komik...</div>
+        </div>
+    </main>
     
     <footer class="bg-transparent mt-16 py-6 text-center text-slate-400"><p>&copy; 2024 KomikKu. Dibuat untuk koleksi pribadi.</p></footer>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-        // --- KONFIGURASI DARI ANDA ---
         const firebaseConfig = {
             apiKey: "AIzaSyBk4PMplZ3zoY-rZqGeWO-UM4rriZVRegQ",
             authDomain: "komik-pribadi.firebaseapp.com",
@@ -83,115 +56,74 @@
             messagingSenderId: "661200517127",
             appId: "1:661200517127:web:fc2acb1f5522f0fbfed2a2"
         };
-        // -------------------------
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- GLOBAL STATE ---
-        let comicsData = [];
-        let scrollInterval = null;
-        let scrollSpeed = 1;
-
-        // --- UI ELEMENTS ---
-        const galleryView = document.getElementById('gallery-view');
+        let allChapters = [];
         const comicGridView = document.getElementById('comic-grid');
-        const readerView = document.getElementById('comic-reader-view');
-        const readerTitle = document.getElementById('comic-reader-title');
-        const panelsContainer = document.getElementById('comic-panels-container');
-        const backToGalleryBtn = document.getElementById('back-to-gallery');
-        const playBtn = document.getElementById('play-scroll');
-        const pauseBtn = document.getElementById('pause-scroll');
-        const speedDisplay = document.getElementById('scroll-speed-display');
-        const speedControl = document.getElementById('speed-control');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const searchTitleInput = document.getElementById('search-title');
+        const searchGenreInput = document.getElementById('search-genre');
+        const searchAuthorInput = document.getElementById('search-author');
+        const resetFilterBtn = document.getElementById('reset-filter-btn');
 
-        // --- FUNCTIONS ---
-        function renderGallery() {
+        function renderComics(comics) {
             comicGridView.innerHTML = '';
-            if (comicsData.length === 0) {
-                comicGridView.innerHTML = `<p class="col-span-full text-center text-slate-400">Koleksi komik masih kosong.</p>`;
+            if (comics.length === 0) {
+                comicGridView.innerHTML = `<p class="col-span-full text-center text-slate-400">Tidak ada komik yang cocok dengan filter.</p>`;
                 return;
             }
-            comicsData.forEach(comic => {
+            comics.forEach(comic => {
+                const comicLink = `detail.html?title=${encodeURIComponent(comic.title)}`;
                 const comicCard = `
-                    <div class="comic-card group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transform hover:-translate-y-2 transition-all duration-300" data-comic-id="${comic.id}">
+                    <a href="${comicLink}" class="comic-card group relative overflow-hidden rounded-lg shadow-lg transform hover:-translate-y-2 transition-all duration-300">
                         <img src="${comic.thumbnail}" alt="${comic.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.onerror=null;this.src='https://placehold.co/500x700/334155/ffffff?text=Error';">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 p-4">
+                        <div class="absolute bottom-0 left-0 p-4 w-full">
                             <h3 class="font-bold text-lg truncate">${comic.title}</h3>
-                            <p class="text-sm text-slate-300">${comic.latestChapter}</p>
+                            <p class="text-sm text-slate-300">Type: ${comic.type || 'N/A'}</p>
                         </div>
-                        <div class="absolute inset-0 bg-sky-500/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <i class="fas fa-eye text-5xl"></i>
-                        </div>
-                    </div>
+                    </a>
                 `;
                 comicGridView.innerHTML += comicCard;
             });
-            addCardListeners();
         }
 
-        function openReader(comicId) {
-            const comic = comicsData.find(c => c.id == comicId);
-            if (!comic) return;
+        function applyFilters() {
+            const titleQuery = searchTitleInput.value.toLowerCase();
+            const genreQuery = searchGenreInput.value.toLowerCase();
+            const authorQuery = searchAuthorInput.value.toLowerCase();
 
-            readerTitle.textContent = comic.title;
-            panelsContainer.innerHTML = '';
-            comic.panels.forEach(panelUrl => {
-                const img = document.createElement('img');
-                img.src = panelUrl;
-                img.alt = "Comic Panel";
-                img.className = "comic-panel";
-                img.loading = "lazy";
-                img.onerror = () => { img.src = 'https://placehold.co/800x1200/334155/ffffff?text=Gagal+memuat+panel'; };
-                panelsContainer.appendChild(img);
+            const filtered = allChapters.filter(chapter => {
+                const titleMatch = chapter.title.toLowerCase().includes(titleQuery);
+                const genreMatch = genreQuery ? (chapter.genre || []).some(g => g.toLowerCase().includes(genreQuery)) : true;
+                const authorMatch = authorQuery ? (chapter.author || '').toLowerCase().includes(authorQuery) : true;
+                return titleMatch && genreMatch && authorMatch;
             });
 
-            galleryView.classList.add('hidden');
-            readerView.classList.remove('hidden');
-            window.scrollTo(0, 0);
+            // Group by title to show only one card per comic series
+            const uniqueComics = Array.from(new Map(filtered.map(item => [item['title'], item])).values());
+            renderComics(uniqueComics);
         }
 
-        function closeReader() {
-            stopAutoScroll();
-            readerView.classList.add('hidden');
-            galleryView.classList.remove('hidden');
-        }
+        searchTitleInput.addEventListener('input', applyFilters);
+        searchGenreInput.addEventListener('input', applyFilters);
+        searchAuthorInput.addEventListener('input', applyFilters);
+        resetFilterBtn.addEventListener('click', () => {
+            searchTitleInput.value = '';
+            searchGenreInput.value = '';
+            searchAuthorInput.value = '';
+            applyFilters();
+        });
 
-        function startAutoScroll() {
-            if (scrollInterval) return;
-            scrollInterval = setInterval(() => window.scrollBy(0, scrollSpeed), 20);
-        }
-
-        function stopAutoScroll() {
-            clearInterval(scrollInterval);
-            scrollInterval = null;
-        }
-
-        function changeScrollSpeed() {
-            scrollSpeed = (scrollSpeed % 5) + 1;
-            speedDisplay.textContent = scrollSpeed;
-        }
-
-        function addCardListeners() {
-            document.querySelectorAll('.comic-card').forEach(card => {
-                card.addEventListener('click', () => openReader(card.dataset.comicId));
-            });
-        }
-
-        // --- EVENT LISTENERS ---
-        backToGalleryBtn.addEventListener('click', closeReader);
-        playBtn.addEventListener('click', startAutoScroll);
-        pauseBtn.addEventListener('click', stopAutoScroll);
-        speedControl.addEventListener('click', changeScrollSpeed);
-
-        // --- INITIALIZATION (FETCH FROM FIRESTORE) ---
-        const comicsCol = collection(db, 'comics');
-        const q = query(comicsCol, orderBy('updatedAt', 'desc'));
+        const chaptersCol = collection(db, 'chapters');
+        const q = query(chaptersCol, orderBy('createdAt', 'desc'));
 
         onSnapshot(q, (snapshot) => {
-            comicsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderGallery();
+            loadingIndicator.style.display = 'none';
+            allChapters = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            applyFilters();
         });
     </script>
 </body>
