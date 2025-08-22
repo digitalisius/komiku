@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - KomikKu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.6); /* slate-900 with opacity */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-200 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+
+    <!-- Login View -->
+    <div id="login-view" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 to-blue-900">
+        <div class="w-full max-w-md p-8 space-y-6 glass-card rounded-2xl shadow-2xl">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-white">Admin Login</h1>
+                <p class="text-slate-300">Silakan masuk untuk melanjutkan</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="email" class="text-sm font-bold text-slate-300">Email</label>
+                    <input type="email" id="email" required class="w-full px-4 py-2 mt-2 text-white bg-slate-700/50 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+                <div>
+                    <label for="password" class="text-sm font-bold text-slate-300">Password</label>
+                    <input type="password" id="password" required class="w-full px-4 py-2 mt-2 text-white bg-slate-700/50 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+                <button type="submit" class="w-full py-3 font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-transform transform hover:scale-105">Login</button>
+            </form>
+            <p id="login-error" class="text-sm text-center text-red-400"></p>
+        </div>
+    </div>
+
+    <!-- Main App View (Hidden by default) -->
+    <div id="app-view" class="hidden flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white dark:bg-slate-800 shadow-md flex-shrink-0">
+            <div class="p-6 text-center border-b dark:border-slate-700">
+                <a href="beranda.html" class="text-2xl font-bold text-sky-500 dark:text-sky-400"><i class="fas fa-book-open-reader mr-2"></i>KomikKu</a>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Panel Admin</p>
+            </div>
+            <nav class="p-4">
+                <ul>
+                    <li><a href="#" class="flex items-center px-4 py-3 text-white bg-sky-500 dark:bg-sky-600 rounded-lg"><i class="fas fa-tachometer-alt w-6 text-center"></i><span class="ml-3">Dashboard</span></a></li>
+                    <li><a href="beranda.html" class="flex items-center px-4 py-3 mt-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition"><i class="fas fa-home w-6 text-center"></i><span class="ml-3">Lihat Beranda</span></a></li>
+                    <li><button id="logout-btn" class="w-full flex items-center px-4 py-3 mt-8 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition"><i class="fas fa-sign-out-alt w-6 text-center"></i><span class="ml-3">Logout</span></button></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <h1 class="text-3xl font-bold mb-8">Manajemen Koleksi Komik</h1>
+
+            <!-- Form to Add/Edit Comic -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg mb-8">
+                <h2 id="form-title" class="text-xl font-semibold mb-4">Tambah Komik Baru</h2>
+                <form id="comic-form">
+                    <input type="hidden" id="comic-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Judul Komik</label>
+                            <input type="text" id="title" class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                        </div>
+                        <div>
+                            <label for="latestChapter" class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Chapter</label>
+                            <input type="text" id="latestChapter" placeholder="Contoh: Chapter 101" class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <label for="thumbnail-upload" class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Upload Thumbnail</label>
+                        <input type="file" id="thumbnail-upload" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 dark:file:bg-slate-700 dark:file:text-sky-300 dark:hover:file:bg-slate-600">
+                        <input type="hidden" id="thumbnail-url">
+                    </div>
+                    
+                    <!-- Dynamic Panel Inputs -->
+                    <div class="mt-6">
+                         <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Panel Komik</label>
+                         <div id="panel-inputs-container" class="space-y-3">
+                             <!-- Panel input rows will be injected here -->
+                         </div>
+                         <button type="button" id="add-panel-btn" class="mt-3 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition text-sm">
+                             <i class="fas fa-plus mr-2"></i>Tambah Panel
+                         </button>
+                    </div>
+
+                    <div id="upload-progress" class="mt-4 hidden">
+                        <p class="text-sm font-medium mb-2">Mengupload...</p>
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                            <div id="progress-bar" class="bg-sky-500 h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center gap-4">
+                        <button type="submit" id="submit-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 flex items-center"><i class="fas fa-save mr-2"></i><span id="save-button-text">Simpan</span></button>
+                        <button type="button" id="cancel-edit" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 hidden">Batal Edit</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- List of Comics -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4">Daftar Komik Tersimpan</h2>
+                <div id="comic-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Comic cards will be injected here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+        // --- KONFIGURASI DARI ANDA ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBk4PMplZ3zoY-rZqGeWO-UM4rriZVRegQ",
+            authDomain: "komik-pribadi.firebaseapp.com",
+            projectId: "komik-pribadi",
+            storageBucket: "komik-pribadi.appspot.com",
+            messagingSenderId: "661200517127",
+            appId: "1:661200517127:web:fc2acb1f5522f0fbfed2a2"
+        };
+
+        const CLOUDINARY_CLOUD_NAME = "dtvmbvwtx";
+        const CLOUDINARY_UPLOAD_PRESET = "komikku";
+        // -------------------------
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- UI ELEMENTS ---
+        const loginView = document.getElementById('login-view');
+        const appView = document.getElementById('app-view');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const comicForm = document.getElementById('comic-form');
+        const comicIdInput = document.getElementById('comic-id');
+        const titleInput = document.getElementById('title');
+        const latestChapterInput = document.getElementById('latestChapter');
+        const thumbnailUpload = document.getElementById('thumbnail-upload');
+        const thumbnailUrlInput = document.getElementById('thumbnail-url');
+        const comicListDiv = document.getElementById('comic-list');
+        const formTitle = document.getElementById('form-title');
+        const saveButtonText = document.getElementById('save-button-text');
+        const cancelEditBtn = document.getElementById('cancel-edit');
+        const uploadProgress = document.getElementById('upload-progress');
+        const progressBar = document.getElementById('progress-bar');
+        const submitBtn = document.getElementById('submit-btn');
+        const panelInputsContainer = document.getElementById('panel-inputs-container');
+        const addPanelBtn = document.getElementById('add-panel-btn');
+
+        // --- AUTHENTICATION ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                loginView.classList.add('hidden');
+                appView.classList.remove('hidden');
+                appView.classList.add('flex');
+                loadComics();
+            } else {
+                appView.classList.add('hidden');
+                appView.classList.remove('flex');
+                loginView.classList.remove('hidden');
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            loginError.textContent = "";
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            signInWithEmailAndPassword(auth, email, password)
+                .catch(error => {
+                    loginError.textContent = "Email atau password salah.";
+                    console.error("Login error:", error);
+                });
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // --- DYNAMIC PANEL FORM ---
+        function createPanelInput(index) {
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-3 panel-input-row';
+            div.innerHTML = `
+                <span class="font-semibold text-slate-500 dark:text-slate-400 w-12 text-right">#${index}</span>
+                <input type="file" accept="image/*" class="panel-file-input w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 dark:file:bg-slate-700 dark:file:text-sky-300 dark:hover:file:bg-slate-600" required>
+                <button type="button" class="remove-panel-btn text-red-500 hover:text-red-700 font-bold text-xl">&times;</button>
+            `;
+            return div;
+        }
+
+        function renumberPanels() {
+            const rows = panelInputsContainer.querySelectorAll('.panel-input-row');
+            rows.forEach((row, index) => {
+                row.querySelector('span').textContent = `#${index + 1}`;
+            });
+        }
+
+        addPanelBtn.addEventListener('click', () => {
+            const newIndex = panelInputsContainer.children.length + 1;
+            panelInputsContainer.appendChild(createPanelInput(newIndex));
+        });
+
+        panelInputsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-panel-btn')) {
+                e.target.closest('.panel-input-row').remove();
+                renumberPanels();
+            }
+        });
+
+        // --- CLOUDINARY UPLOAD FUNCTION ---
+        async function uploadFile(file, folder, public_id) {
+            const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            formData.append('folder', folder);
+            formData.append('public_id', public_id);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+            return data.secure_url;
+        }
+
+        // --- FIRESTORE CRUD ---
+        const comicsCol = collection(db, 'comics');
+
+        function loadComics() {
+            onSnapshot(comicsCol, snapshot => {
+                comicListDiv.innerHTML = '';
+                if (snapshot.empty) {
+                    comicListDiv.innerHTML = `<p class="text-slate-500 col-span-full text-center">Belum ada komik.</p>`;
+                    return;
+                }
+                snapshot.docs.forEach(doc => {
+                    const comic = { id: doc.id, ...doc.data() };
+                    const card = `
+                        <div class="bg-white dark:bg-slate-700/50 rounded-lg shadow-md overflow-hidden">
+                            <img src="${comic.thumbnail}" alt="${comic.title}" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/334155/ffffff?text=Error';">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">${comic.title}</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">${comic.latestChapter}</p>
+                                <div class="mt-4 flex justify-end gap-2">
+                                    <button class="edit-btn text-blue-500 hover:text-blue-600 p-2" data-id="${comic.id}" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                                    <button class="delete-btn text-red-500 hover:text-red-600 p-2" data-id="${comic.id}" title="Hapus"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    comicListDiv.innerHTML += card;
+                });
+            });
+        }
+
+        function resetForm() {
+            comicForm.reset();
+            comicIdInput.value = '';
+            thumbnailUrlInput.value = '';
+            panelInputsContainer.innerHTML = '';
+            panelInputsContainer.appendChild(createPanelInput(1)); // Add one initial panel input
+            formTitle.textContent = 'Tambah Komik Baru';
+            saveButtonText.textContent = 'Simpan';
+            cancelEditBtn.classList.add('hidden');
+            uploadProgress.classList.add('hidden');
+            progressBar.style.width = '0%';
+            submitBtn.disabled = false;
+        }
+
+        comicForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            saveButtonText.textContent = 'Processing...';
+            uploadProgress.classList.remove('hidden');
+
+            try {
+                const title = titleInput.value;
+                const chapter = latestChapterInput.value;
+                const thumbnailFile = thumbnailUpload.files[0];
+                
+                const panelInputs = panelInputsContainer.querySelectorAll('.panel-file-input');
+                const panelFiles = Array.from(panelInputs).map(input => input.files[0]).filter(file => file);
+
+                if (!thumbnailFile && !comicIdInput.value) {
+                    throw new Error("Thumbnail wajib diupload untuk komik baru.");
+                }
+                if (panelFiles.length === 0 && !comicIdInput.value) {
+                     throw new Error("Minimal satu panel wajib diupload untuk komik baru.");
+                }
+
+                const folderName = title.replace(/[^a-zA-Z0-9]/g, '_');
+                
+                let uploadedThumbnailUrl = thumbnailUrlInput.value;
+                if (thumbnailFile) {
+                    progressBar.style.width = '10%';
+                    uploadedThumbnailUrl = await uploadFile(thumbnailFile, folderName, 'thumbnail');
+                }
+
+                let uploadedPanelUrls = [];
+                if (panelFiles.length > 0) {
+                    for (let i = 0; i < panelFiles.length; i++) {
+                        const panelUrl = await uploadFile(panelFiles[i], `${folderName}/${chapter.replace(/ /g, '_')}`, `panel_${i + 1}`);
+                        uploadedPanelUrls.push(panelUrl);
+                        progressBar.style.width = `${10 + (90 * (i + 1) / panelFiles.length)}%`;
+                    }
+                }
+                
+                const comicData = {
+                    title: title,
+                    latestChapter: chapter,
+                    thumbnail: uploadedThumbnailUrl,
+                    // Only update panels if new ones were uploaded
+                    ...(uploadedPanelUrls.length > 0 && { panels: uploadedPanelUrls }),
+                    updatedAt: serverTimestamp()
+                };
+
+                if (comicIdInput.value) {
+                    // Update
+                    const docRef = doc(db, 'comics', comicIdInput.value);
+                    await updateDoc(docRef, comicData);
+                } else {
+                    // Add
+                    await addDoc(comicsCol, { ...comicData, createdAt: serverTimestamp() });
+                }
+
+                resetForm();
+
+            } catch (error) {
+                console.error("Error saving comic:", error);
+                alert("Gagal menyimpan komik: " + error.message);
+                submitBtn.disabled = false;
+                saveButtonText.textContent = 'Simpan';
+                uploadProgress.classList.add('hidden');
+                progressBar.style.width = '0%';
+            }
+        });
+
+        cancelEditBtn.addEventListener('click', resetForm);
+
+        comicListDiv.addEventListener('click', (e) => {
+            const editButton = e.target.closest('.edit-btn');
+            const deleteButton = e.target.closest('.delete-btn');
+
+            if (editButton) {
+                const id = editButton.dataset.id;
+                const comicCard = editButton.closest('.bg-white');
+                const title = comicCard.querySelector('h3').textContent;
+                const chapter = comicCard.querySelector('p').textContent;
+                const thumbnail = comicCard.querySelector('img').src;
+
+                comicIdInput.value = id;
+                titleInput.value = title;
+                latestChapterInput.value = chapter;
+                thumbnailUrlInput.value = thumbnail; 
+                
+                panelInputsContainer.innerHTML = '';
+                panelInputsContainer.appendChild(createPanelInput(1));
+                
+                formTitle.textContent = 'Edit Komik: ' + title;
+                saveButtonText.textContent = 'Update';
+                cancelEditBtn.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+
+            if (deleteButton) {
+                const id = deleteButton.dataset.id;
+                if (confirm('Apakah Anda yakin ingin menghapus komik ini? Data tidak bisa dikembalikan.')) {
+                    deleteDoc(doc(db, 'comics', id));
+                }
+            }
+        });
+
+        // Initialize form with one panel input
+        resetForm();
+
+    </script>
+</body>
+</html>
